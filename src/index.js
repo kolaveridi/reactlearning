@@ -10,12 +10,14 @@ class Calculatetop extends React.Component{
         this.addthree=this.addthree.bind(this);this.addfour=this.addfour.bind(this);this.addfive=this.addfive.bind(this);
         this.addsix=this.addsix.bind(this);this.addseven=this.addseven.bind(this);this.addeight=this.addeight.bind(this);
         this.addnine=this.addnine.bind(this);this.plus=this.plus.bind(this);this.subtract=this.subtract.bind(this);
+       this.equal=this.equal.bind(this);
         this.multiply=this.multiply.bind(this);this.divide=this.divide.bind(this);this.clearall=this.clearall.bind(this);
         this.state = {
             result:0,
-            number:0,
+            finalstring:"",
+            previousinput:null,
+            currentoperator:null,
             numberformed:0,
-            finalstring:''
         };
 
     };
@@ -137,29 +139,29 @@ class Calculatetop extends React.Component{
     }
    plus(){
     console.log('plus is clicked');
+    console.log("numberformed is "+this.state.numberformed);
     this.setState(()=>{
-        return{
-    
+        return{   
+            finalstring:this.state.finalstring+'+',
+            currentoperator:'+',
             
-          
-            result:this.state.numberformed+this.state.result,
-            finalstring:this.state.finalstring+'+'
-            
-
-        
+            result:this.state.result+this.state.numberformed,
+            numberformed:0
         };
-        console.log("value of result is now");
-    });
+   });
+   console.log("result is "+this.state.result);
+}
 
-   }
    subtract(){
     console.log('subtract is clicked');
     this.setState(()=>{
         return{
     
         
-          result:this.state.result-this.state.numberformed,
-          finalstring:this.state.finalstring+'-'
+         
+          finalstring:this.state.finalstring+'-',
+          currentoperator:'-'
+          
         
         };
     });
@@ -172,7 +174,8 @@ class Calculatetop extends React.Component{
     
         
           result:this.state.result*this.state.numberformed,
-          finalstring:this.state.finalstring+'*'
+          finalstring:this.state.finalstring+'*',
+          currentoperator:'*'
         
         };
     });
@@ -184,8 +187,8 @@ class Calculatetop extends React.Component{
     
         
           result:this.state.result/this.state.numberformed,
-          finalstring:this.state.finalstring+'/'
-        
+          finalstring:this.state.finalstring+'/',
+          currentoperator:'/'
         };
     });
 
@@ -202,12 +205,33 @@ class Calculatetop extends React.Component{
         
         };
     });
+}
+    equal(){
+        console.log("equal is clicked now");
+        const val=this.state.currentoperator;
+        console.log("val is "+val);
+        console.log("result is "+this.state.result);
+
+        if(val==='+'){
+            this.setState(()=>{
+                return{
+                    numberformed:this.state.numberformed,
+                    result:this.state.result+this.state.numberformed,
+                    numberformed:0
+    
+                  }
+
+                
+            });
+        }
+    
+    }
 
 
 
    
 
-   }
+   
 
     
     
@@ -217,15 +241,16 @@ class Calculatetop extends React.Component{
          <div>
              <h1>CalculatorApp</h1>
              <Calculatordisplay 
-             
+             numberformed={this.state.numberformed}
              finalstring={this.state.finalstring}
+             result={this.state.result}
              ></Calculatordisplay>
              <Calculatorconfig
               addzero={this.addzero} addone={this.addone}  addtwo={this.addtwo}
               addthree={this.addthree} addfour={this.addfour} addfive={this.addfive}
               addsix={this.addsix} addseven={this.addseven} addeight={this.addeight}
               addnine={this.addnine} plus={this.plus} subtract={this.subtract} multiply={this.multiply}
-              divide ={this.divide} clearall={this.clearall}
+              divide ={this.divide} clearall={this.clearall} equal={this.equal}
               ></Calculatorconfig>
              </div>
 
@@ -234,10 +259,6 @@ class Calculatetop extends React.Component{
 }
 
 class Calculatordisplay extends React.Component{
-    constructor(props){
-        super(props);   
-    }
-    
     
     render(){
         console.log(this.props.finalstring);
@@ -246,6 +267,8 @@ class Calculatordisplay extends React.Component{
         <div>
             
             <p>{this.props.finalstring}</p>
+            <p>{this.props.numberformed}</p>
+            <p>{this.props.result}</p>
             
             </div>
         );
@@ -281,6 +304,8 @@ class Calculatorconfig extends React.Component{
            <button onClick={this.props.divide}>/</button>
            <button onClick={this.props.multiply}>*</button>
            <button onClick={this.props.clearall}>C</button>
+
+           <button onClick={this.props.equal} >Equal</button>
            </div>
      </div>
         );
