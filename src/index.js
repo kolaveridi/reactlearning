@@ -6,306 +6,162 @@ console.log("app is running now");
 class Calculatetop extends React.Component{
     constructor(props){
         super(props);
-        this.addzero=this.addzero.bind(this); this.addone=this.addone.bind(this);this.addtwo=this.addtwo.bind(this);
-        this.addthree=this.addthree.bind(this);this.addfour=this.addfour.bind(this);this.addfive=this.addfive.bind(this);
-        this.addsix=this.addsix.bind(this);this.addseven=this.addseven.bind(this);this.addeight=this.addeight.bind(this);
-        this.addnine=this.addnine.bind(this);this.plus=this.plus.bind(this);this.subtract=this.subtract.bind(this);
-       this.equal=this.equal.bind(this);
-        this.multiply=this.multiply.bind(this);this.divide=this.divide.bind(this);this.clearall=this.clearall.bind(this);
-        this.state = {
-            result:0,
-            finalstring:"",
-            previousinput:null,
-            currentoperator:null,
-            numberformed:0,
+
+        this.state = this.initialState();
+        this.operatorStack = [];
+        this.operandStack = [];
+        this.shouldReset = false;
+    }
+
+    initialState() {
+      return {
+          currentDisplay:'',
         };
-
-    };
-    addzero(){
-        console.log("zero is clicked");
-        console.log("finalstring is "+this.state.finalstring);
-        this.setState(()=>{
-            return{
-            
-              numberformed:this.state.numberformed*10+0,
-              finalstring:this.state.finalstring+'0'
-            
-            };
-        });
-       
     }
-    addone(){
-        console.log("addone is clicked");
-        this.setState(()=>{
-            return{
-            
-              numberformed:this.state.numberformed*10+1,
-              finalstring:this.state.finalstring+'1'
-              
-            
-            };
-        });
-    }
-    addtwo(){
-        console.log("two is clicked");
-        this.setState(()=>{
-            return{
-            
-              numberformed: this.state.numberformed*10+2,
-              finalstring:this.state.finalstring+'2'
-            
-            };
-        });
 
+    reset() {
+      this.setState(()=> this.initialState());
+      this.operatorStack = [];
+      this.operandStack = [];
     }
-    addthree(){
-        console.log("three is clicked");
-        this.setState(()=>{
-            return{
-            
-              numberformed: this.state.numberformed*10+3,
-              finalstring:this.state.finalstring+'3'
-            };
-        });
 
-    }
-    addfour(){
-        console.log("four is clicked");
-        this.setState(()=>{
-            return{
-              numberformed: this.state.numberformed*10+4,
-              finalstring:this.state.finalstring+'4'
-            };
-        });
+    handleInput(input) {
 
-    }
-    addfive(){
-        console.log('five is clicked');
-        this.setState(()=>{
-            return{
-              numberformed: this.state.numberformed*10+5,    
-              finalstring:this.state.finalstring+'5'
-            };
-        });
-    }
-    addsix(){
-        console.log('six is clicked');
-        this.setState(()=>{
-            return{
-            
-              numberformed: this.state.numberformed*10+6,
-              finalstring:this.state.finalstring+'6'
-              
-            
-            };
-        });
-    }
-    addseven(){
-        console.log('seven is clicked');
-        this.setState(()=>{
-            return{
-            
-              numberformed: this.state.numberformed*10+7,
-              finalstring:this.state.finalstring+'7'
-              
-            
-            };
-        });
-    }
-    addeight(){
-        console.log('eight is clicked');
-        this.setState(()=>{
-            return{
-        
-              numberformed: this.state.numberformed*10+8,
-              finalstring:this.state.finalstring+'8'
-             
-            
-            };
-        });
-    }
-    addnine(){
-        console.log('nine is clicked');
-        this.setState(()=>{
-            return{
-        
-              numberformed: this.state.numberformed*10+8,
-              finalstring:this.state.finalstring+'9'
-             
-            
-            };
-        });
+      let digits = ["0","1","2","3","4","5","6","7","8","9","."];
+      let operators = ["+","-","*","/","="];
 
-    }
-   plus(){
-    console.log('plus is clicked');
-    console.log("numberformed is "+this.state.numberformed);
-    this.setState(()=>{
-        return{   
-            finalstring:this.state.finalstring+'+',
-            currentoperator:'+',
-            
-            result:this.state.result+this.state.numberformed,
-            numberformed:0
-        };
-   });
-   console.log("result is "+this.state.result);
-}
+      if (input === "C") {
+        this.reset();
+        return;
+      }
 
-   subtract(){
-    console.log('subtract is clicked');
-    this.setState(()=>{
-        return{
-    
-        
-         
-          finalstring:this.state.finalstring+'-',
-          currentoperator:'-'
-          
-        
-        };
-    });
-   }
-   multiply(){
-
-    console.log('multiply is clicked');
-    this.setState(()=>{
-        return{
-    
-        
-          result:this.state.result*this.state.numberformed,
-          finalstring:this.state.finalstring+'*',
-          currentoperator:'*'
-        
-        };
-    });
-   }
-   divide(){
-    console.log('divide is clicked');
-    this.setState(()=>{
-        return{
-    
-        
-          result:this.state.result/this.state.numberformed,
-          finalstring:this.state.finalstring+'/',
-          currentoperator:'/'
-        };
-    });
-
-   }
-   clearall(){
-    console.log('clearall is clicked');
-    this.setState(()=>{
-        return{
-    
-        
-          result:0,
-          numberformed:0,
-          finalstring:''
-        
-        };
-    });
-}
-    equal(){
-        console.log("equal is clicked now");
-        const val=this.state.currentoperator;
-        console.log("val is "+val);
-        console.log("result is "+this.state.result);
-
-        if(val==='+'){
-            this.setState(()=>{
-                return{
-                    numberformed:this.state.numberformed,
-                    result:this.state.result+this.state.numberformed,
-                    numberformed:0
-    
-                  }
-
-                
-            });
+      if (digits.includes(input)) {
+        if(this.shouldReset === true) {
+           this.state.currentDisplay = '';
+           this.shouldReset = false;
         }
-    
+        this.setState({
+          currentDisplay : this.state.currentDisplay + input
+        })
+      }
+
+      if (operators.includes(input)) {
+
+      if(this.operatorStack.length > 0 && this.precedence(input) <= this.precedence(this.topOperator()) || input == "=") {
+        this.operandStack.push(parseFloat(this.state.currentDisplay));
+        this.solveStack();
+        let result = this.operandStack[0];
+        this.setState({
+          currentDisplay:`${result}`
+        })
+
+        this.operandStack = [];
+        this.operatorStack = [];
+      } else {
+         this.operandStack.push(parseFloat(this.state.currentDisplay));
+      }
+
+
+        if (input !== '=') {
+          this.operatorStack.push(input);
+          this.shouldReset = true;
+        }
+
+      }
+
     }
 
+    topOperator() {
+      return this.operatorStack[this.operatorStack.length - 1];
+    }
 
+    solveStack() {
+      while(this.operatorStack.length > 0) {
+        let operator = this.operatorStack.pop();
+        let operandTwo = this.operandStack.pop();
+        let operandOne = this.operandStack.pop();
+        this.operandStack.push(this.performOperation(operandOne,operandTwo,operator));
+      }
+    }
 
-   
+    precedence(operator) {
+      return {
+        '+' : 1 , '-' : 1 , '*' : 2 , '/' : 2
+      }[operator];
+    }
 
-   
+    performOperation(first,second,operator) {
+      if (operator === "+") {
+        return first + second;
+      }
+      else if (operator === "-") {
+        return first - second;
+      }
+      else if (operator === "*") {
+        return first * second;
+      }
+      else if (operator === "/") {
+        return first / second;
+      }
+    }
 
-    
-    
-    render() 
+    render()
     {
         return(
          <div>
              <h1>CalculatorApp</h1>
-             <Calculatordisplay 
-             numberformed={this.state.numberformed}
-             finalstring={this.state.finalstring}
-             result={this.state.result}
-             ></Calculatordisplay>
-             <Calculatorconfig
-              addzero={this.addzero} addone={this.addone}  addtwo={this.addtwo}
-              addthree={this.addthree} addfour={this.addfour} addfive={this.addfive}
-              addsix={this.addsix} addseven={this.addseven} addeight={this.addeight}
-              addnine={this.addnine} plus={this.plus} subtract={this.subtract} multiply={this.multiply}
-              divide ={this.divide} clearall={this.clearall} equal={this.equal}
-              ></Calculatorconfig>
+             <CalculatorDisplay
+             currentDisplay={this.state.currentDisplay}
+             ></CalculatorDisplay>
+             <CalculatorConfig inputHandler={(input) => this.handleInput(input)}></CalculatorConfig>
              </div>
 
         );
     }
 }
 
-class Calculatordisplay extends React.Component{
-    
+class CalculatorDisplay extends React.Component{
+
     render(){
-        console.log(this.props.finalstring);
         return(
-           
         <div>
-            
-            <p>{this.props.finalstring}</p>
-            <p>{this.props.numberformed}</p>
-            <p>{this.props.result}</p>
-            
+            <p>{this.props.currentDisplay === '' ? '0' : this.props.currentDisplay}</p>
             </div>
         );
     }
 }
 
 
-class Calculatorconfig extends React.Component{
+class CalculatorConfig extends React.Component{
     render(){
         return(
        <div>
            <div className="rows">
-           <button onClick={this.props.addzero}>0</button>
-           <button onClick={this.props.addone}>1</button>
-           <button onClick={this.props.addtwo}>2</button>
+           <button onClick={() => this.props.inputHandler("0")}>0</button>
+           <button onClick={() => this.props.inputHandler("1")}>1</button>
+           <button onClick={() => this.props.inputHandler("2")}>2</button>
            </div>
            <div className="rows">
-           <button onClick={this.props.addthree}>3</button>
-           <button onClick={this.props.addfour}>4</button>
-           <button onClick={this.props.addfive}>5</button>
+           <button onClick={() => this.props.inputHandler("3")}>3</button>
+           <button onClick={() => this.props.inputHandler("4")}>4</button>
+           <button onClick={() => this.props.inputHandler("5")}>5</button>
            </div>
            <div className="rows">
-           <button onClick={this.props.addsix}>6</button>
-           <button onClick={this.props.addseven}>7</button>
-           <button onClick={this.props.addeight}>8</button>
+           <button onClick={() => this.props.inputHandler("6")}>6</button>
+           <button onClick={() => this.props.inputHandler("7")}>7</button>
+           <button onClick={() => this.props.inputHandler("8")}>8</button>
            </div>
            <div className="methods">
-           <button onClick={this.props.addnine}>9</button>
-           <button onClick={this.props.plus} >+</button>
-           <button onClick={this.props.subtract}>-</button>
+           <button onClick={() => this.props.inputHandler("9")}>9</button>
+           <button onClick={() => this.props.inputHandler("+")} >+</button>
+           <button onClick={() => this.props.inputHandler("-")}>-</button>
            </div>
            <div className="methods">
-           <button onClick={this.props.divide}>/</button>
-           <button onClick={this.props.multiply}>*</button>
-           <button onClick={this.props.clearall}>C</button>
+           <button onClick={() => this.props.inputHandler("/")}>/</button>
+           <button onClick={() => this.props.inputHandler("*")}>*</button>
+           <button onClick={() => this.props.inputHandler("C")}>C</button>
 
-           <button onClick={this.props.equal} >Equal</button>
+           <button onClick={() => this.props.inputHandler("=")} >Equal</button>
            </div>
      </div>
         );
@@ -314,9 +170,9 @@ class Calculatorconfig extends React.Component{
 }
 const jsx =(
     <div>
-       
+
         <Calculatetop/>
-        
+
     </div>
 );
 ReactDOM.render(jsx,approot);
