@@ -52,13 +52,9 @@ class Calculatetop extends React.Component{
       try {
         this.operandStack.push(parseFloat(this.state.currentDisplay));
         this.solveStack();
-        let result = this.operandStack[0];
         this.setState({
-          currentDisplay:`${result}`
+          currentDisplay:`${this.operandStack[0]}`
         });
-        this.operandStack = [result];
-        this.operatorStack = [];
-
       }
 
       catch (error) {
