@@ -32,31 +32,46 @@ class Calculatetop extends React.Component{
 
       if (input === "C") {
         this.reset();
-        return;
       }
 
-      if (digits.includes(input)) {
+      else if (digits.includes(input)) {
         if(this.shouldReset === true) {
            this.state.currentDisplay = '';
            this.shouldReset = false;
         }
         this.setState({
           currentDisplay : this.state.currentDisplay + input
-        })
+        });
+        return;
       }
 
-      if (operators.includes(input)) {
+      else if (operators.includes(input)) {
 
       if(this.operatorStack.length > 0 && this.precedence(input) <= this.precedence(this.topOperator()) || input == "=") {
+
+      try {
         this.operandStack.push(parseFloat(this.state.currentDisplay));
         this.solveStack();
         let result = this.operandStack[0];
         this.setState({
           currentDisplay:`${result}`
-        })
+        });
+        this.operandStack = [result];
+        this.operatorStack = [];
 
+      }
+
+      catch (error) {
+        this.setState({
+          currentDisplay:`Error`
+        });
         this.operandStack = [];
         this.operatorStack = [];
+        this.shouldReset = true;
+
+      }
+
+
       } else {
          this.operandStack.push(parseFloat(this.state.currentDisplay));
       }
@@ -101,6 +116,9 @@ class Calculatetop extends React.Component{
         return first * second;
       }
       else if (operator === "/") {
+        if(second == 0) {
+          throw 'Divide by zero';
+        }
         return first / second;
       }
     }
@@ -131,37 +149,28 @@ class CalculatorDisplay extends React.Component{
     }
 }
 
+let ButtonComponent = (text,handler) => {
+  return <button onClick ={ () => handler(text)}> { text} </button>
+};
 
 class CalculatorConfig extends React.Component{
     render(){
         return(
        <div>
            <div className="rows">
-           <button onClick={() => this.props.inputHandler("0")}>0</button>
-           <button onClick={() => this.props.inputHandler("1")}>1</button>
-           <button onClick={() => this.props.inputHandler("2")}>2</button>
+           { ["0","1","2"].map((element) => ButtonComponent(element,this.props.inputHandler))}
            </div>
            <div className="rows">
-           <button onClick={() => this.props.inputHandler("3")}>3</button>
-           <button onClick={() => this.props.inputHandler("4")}>4</button>
-           <button onClick={() => this.props.inputHandler("5")}>5</button>
+             { ["3","4","5"].map((element) => ButtonComponent(element,this.props.inputHandler))}
            </div>
            <div className="rows">
-           <button onClick={() => this.props.inputHandler("6")}>6</button>
-           <button onClick={() => this.props.inputHandler("7")}>7</button>
-           <button onClick={() => this.props.inputHandler("8")}>8</button>
+             { ["6","7","8"].map((element) => ButtonComponent(element,this.props.inputHandler))}
            </div>
            <div className="methods">
-           <button onClick={() => this.props.inputHandler("9")}>9</button>
-           <button onClick={() => this.props.inputHandler("+")} >+</button>
-           <button onClick={() => this.props.inputHandler("-")}>-</button>
+             { ["9","+","-"].map((element) => ButtonComponent(element,this.props.inputHandler))}
            </div>
            <div className="methods">
-           <button onClick={() => this.props.inputHandler("/")}>/</button>
-           <button onClick={() => this.props.inputHandler("*")}>*</button>
-           <button onClick={() => this.props.inputHandler("C")}>C</button>
-
-           <button onClick={() => this.props.inputHandler("=")} >Equal</button>
+             { ["/","*","C","="].map((element) => ButtonComponent(element,this.props.inputHandler))}
            </div>
      </div>
         );
@@ -170,9 +179,7 @@ class CalculatorConfig extends React.Component{
 }
 const jsx =(
     <div>
-
         <Calculatetop/>
-
     </div>
 );
 ReactDOM.render(jsx,approot);
