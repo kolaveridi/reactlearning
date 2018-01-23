@@ -14,6 +14,7 @@ class Calculatetop extends React.Component{
         this.multiply=this.multiply.bind(this);this.divide=this.divide.bind(this);this.clearall=this.clearall.bind(this);
         this.state = {
             result:0,
+            val:1,
             finalstring:"",
             previousinput:null,
             currentoperator:null,
@@ -157,28 +158,35 @@ class Calculatetop extends React.Component{
     this.setState(()=>{
         return{
     
-        
-         
-          finalstring:this.state.finalstring+'-',
-          currentoperator:'-'
+           
           
-        
+          finalstring:this.state.finalstring+'-',
+          currentoperator:'-',
         };
     });
    }
+   
    multiply(){
 
     console.log('multiply is clicked');
+    
+    console.log('numberformed is '+this.state.numberformed);
     this.setState(()=>{
+        const val = this.state.val * this.state.numberformed
+        
         return{
     
-        
-          result:this.state.result*this.state.numberformed,
           finalstring:this.state.finalstring+'*',
+          val : this.state.val * this.state.numberformed,
+          result:this.state.val*this.state.numberformed,
+    
+          numberformed:0,
           currentoperator:'*'
         
         };
+        
     });
+
    }
    divide(){
     console.log('divide is clicked');
@@ -201,7 +209,8 @@ class Calculatetop extends React.Component{
         
           result:0,
           numberformed:0,
-          finalstring:''
+          finalstring:'',
+          val:1
         
         };
     });
@@ -215,7 +224,7 @@ class Calculatetop extends React.Component{
         if(val==='+'){
             this.setState(()=>{
                 return{
-                    numberformed:this.state.numberformed,
+                    
                     result:this.state.result+this.state.numberformed,
                     numberformed:0
     
@@ -223,6 +232,20 @@ class Calculatetop extends React.Component{
 
                 
             });
+        }
+        else if(val==='*'){
+            this.setState(()=>{
+                return{
+                   
+                    //val:this.state.val*this.state.numberformed,
+                    result:this.state.val*this.state.numberformed,
+                    numberformed:0
+    
+                  }
+
+                
+            });
+
         }
     
     }
